@@ -3,10 +3,6 @@ import pandas as pd
 from src.text_preprocessing import Text_preprocessing
 from sklearn.model_selection import train_test_split
 
-import sys
-from pprint import pprint
-
-
 with open("src/config.yaml", 'r') as f:
     config = yaml.safe_load(f)
 

@@ -2,13 +2,8 @@ import mlflow
 import yaml
 import pickle
 import json
-#from pprint import pprint
-
-#pprint(sys.path)
-#exit()
-
 from text_preprocessing import Text_preprocessing
-from cnn import Models
+from training_models import Models
 import tensorflow as tf
 from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
 
