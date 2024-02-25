@@ -1,0 +1,20 @@
+artifact_path: cnn_model_bi_lstm_cleaning
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.tensorflow
+    python_version: 3.10.11
+  tensorflow:
+    code: null
+    data: data
+    keras_version: 2.15.0
+    model_type: keras
+    save_format: tf
+mlflow_version: 2.10.1
+model_size_bytes: 7177910
+model_uuid: 5a3e380436c84c478bea896c22ad4e49
+run_id: 5d8803fc0a3c4cdca17a75d9c3139cc1
+utc_time_created: '2024-02-23 14:32:40.344216'
