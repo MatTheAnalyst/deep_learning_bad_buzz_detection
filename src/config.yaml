@@ -11,58 +11,42 @@ dependencies:
   - gensim==4.3.2
   - mlflow==2.10.1
 
-sampling:
+setup:
   x_train_sample_size: 200000
   x_val_sample_size: 60000
   x_test_sample_size: 60000
   x_train_sampled_path: data/processed/x_train_sampled.pkl
   x_val_sampled_path: data/processed/x_val_sampled.pkl
   x_test_sampled_path: data/processed/x_test_sampled.pkl
+  x_train_cleaned_path: data/processed/x_train_cleaned.pkl
+  x_val_cleaned_path: data/processed/x_val_cleaned.pkl
+  x_test_cleaned_path: data/processed/x_test_cleaned.pkl
+  x_train_lemmatized_path: data/processed/x_train_lemmatized.pkl
+  x_val_lemmatized_path: data/processed/x_val_lemmatized.pkl
+  x_test_lemmatized_path: data/processed/x_test_lemmatized.pkl
   y_train_sampled_path: data/processed/y_train_sampled.pkl
   y_val_sampled_path: data/processed/y_val_sampled.pkl
   y_test_sampled_path: data/processed/y_test_sampled.pkl
+  y_train_preprocessed_path: data/processed/y_train_preprocessed.pkl
+  y_val_preprocessed_path: data/processed/y_val_preprocessed.pkl
+  y_test_preprocessed_path: data/processed/y_test_preprocessed.pkl
 
-nltk:
-  packages_nltk: ['punkt', 'wordnet', 'stopwords', 'averaged_perceptron_tagger']
-  stop_word: 'english'
 
-preprocess:
-  cleaning: true
-  lemmatizing: true
-
-model:
-  cnn: false
-  bi_lstm: false
-  bert: true
-
-cnn:
+preprocessing:
   tokenizer_max_words: 2000
-  max_lenght: 100
+  max_length: 100
   embedding_dim: 50
   pretrained_embedding_matrix_path: null
   #data/GoogleNews-vectors-negative300.bin
   #data/glove/glove.twitter.27B.50d.txt
-  build_params:
-    dropout_rate: 0.5
-    num_conv_layers: 2
-    conv_units: 128
-    kernel_size: 7
-    strides: 3
-    dense_units: 128
-    optimizer: 'adam'
-  train_params:
-    early_stop_patience: 6
-    early_stop_min_delta: 0.01
-    lr_reducer_factor: 0.1
-    lr_reducer_cooldown: 5
-    lr_reducer_patience: 5
-    lr_reducer_min_lr: 0.000001
-    epochs: 5
-    batch_size: 32
-    workers: 3
 
-mlflow:
-  run_name: cnn_model_bert_cleaning_lemmatizing
+cnn:
+  epochs: 5
+  batch_size: 32
+  workers: 3
   figure_path: outputs/history_loss_accuracy.png
-  tokenizer_dir_path: outputs/tokenizer
-  tokenizer_json_path: outputs/tokenizer.json
+
+bert:
+  epochs: 2
+  batch_size: 32
+  figure_path: outputs/history_loss_accuracy.png

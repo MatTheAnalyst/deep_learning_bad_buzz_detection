@@ -3,11 +3,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
-import re, string, yaml
-
-
-with open("config.yaml", 'r') as f:
-    config = yaml.safe_load(f)
+import re, string
 
 
 class Text_preprocessing():
@@ -38,43 +34,22 @@ class Text_preprocessing():
 
         return values_sample, labels_sample
     
-    
-    def clean_and_preprocess(self, data):
-        """
-        Nettoyer et prétraiter un commentaire ou une liste de commentaires.
-        
-        Args:
-            data: Un commentaire (str) ou une liste de commentaires (liste de str).
-        
-        Returns:
-            Le commentaire ou la liste de commentaires nettoyée(s).
-        """
+    def clean_comment(self, comment):
+        if not comment or not isinstance(comment, str):
+            print(f"{comment} n'est pas un commentaire valide")
+            return ""
 
-        def clean_str(comment):
-            if not comment or not isinstance(comment, str):
-                print(f"{comment} n'est pas un commentaire valide")
-                return ""
+        # Nettoyage du commentaire
+        comment = re.sub(r'<.*?>', '', comment)
+        comment = re.sub(r'[^\x00-\x7F]+', '', comment)
+        comment = re.sub(r'[0-9]*', '', comment)
+        comment = re.sub(r"(.)\\1{2,}", '', comment)
+        url_username = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
+        comment = re.sub(url_username, ' ', str(comment).lower()).strip()
+        comment = comment.translate(str.maketrans('', '', string.punctuation))
+        comment = ' '.join([word for word in comment.split() if len(word) > 1])
 
-            # Nettoyage du commentaire
-            comment = re.sub(r'<.*?>', '', comment)
-            comment = re.sub(r'[^\x00-\x7F]+', '', comment)
-            comment = re.sub(r'[0-9]*', '', comment)
-            comment = re.sub(r"(.)\\1{2,}", '', comment)
-            url_username = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
-            comment = re.sub(url_username, ' ', str(comment).lower()).strip()
-            comment = comment.translate(str.maketrans('', '', string.punctuation))
-            comment = ' '.join([word for word in comment.split() if len(word) > 1])
-
-            return comment
-
-        # Appliquer le nettoyage
-        if isinstance(data, str):
-            return clean_str(data.lower())
-        elif isinstance(data, list):
-            return [clean_str(comment.lower()) for comment in data]
-        else:
-            print("Type de donnée non pris en charge")
-            return data
+        return comment
 
     def get_wordnet_pos(self, treebank_tag):
         """
@@ -95,61 +70,24 @@ class Text_preprocessing():
             return wordnet.ADV
         else:
             return wordnet.NOUN
-
     
-    def delete_stopwords(self, tokens:list):
-        stop_words = set(stopwords.words(config['nltk']['stop_word']))
-        return [token for token in tokens if token not in stop_words]
-    
-
-    def lemmatized_tokens(self, tokens:list):
-        """
-        Lemmatize tokens based on their part-of-speech tags.
-        
-        Args:
-            tokens: A list of word tokens.
-        Returns:
-            A list of lemmatized word tokens.
-        """
-        pos_tags = pos_tag(tokens)
+    def lemmatized_comment(self, comment):
+        stop_words = set(stopwords.words('english'))
         lemmatizer = WordNetLemmatizer()
-        return [lemmatizer.lemmatize(word, pos=self.get_wordnet_pos(pos)) for word, pos in pos_tags]
 
-    def tokenizing(self, data):
-        """
-        Tokenize the comment string into individual words.
-        
-        Args:
-            comment: The comment string to be tokenized.
-        Returns:
-            A list of words obtained from the comment.
-        """
-        if isinstance(data, str):
-            data_tokenized =  word_tokenize(data)
-            data_tokenized_without_stopword = self.delete_stopwords(data_tokenized)
-            data_lemmatized = self.lemmatized_tokens(data_tokenized_without_stopword)
+        # Check format of comment
+        if isinstance(comment, pd.Series):
+            pass
+        elif isinstance(comment, (str, list, dict)):
+            comment = pd.Series(comment)
         else:
-            data_tokenized = data.apply(word_tokenize)
-            data_tokenized_without_stopword = data.apply(self.delete_stopwords)
-            data_lemmatized = data_tokenized_without_stopword.apply(self.lemmatized_tokens)
+            print(f"Impossible d'appliquer une lemmatization.\nLe format du comment n'est pas reconnu : {type(comment)}")
         
-        return " ".join(data_lemmatized)
+        comment_tokenize = comment.apply(word_tokenize)
+        comment_without_stopword = comment_tokenize.apply(lambda x: [x for x in x if x not in stop_words])
+        comment_with_pos = comment_without_stopword.apply(pos_tag)
+        comment_lemmatize = comment_with_pos.apply(lambda comment: [lemmatizer.lemmatize(word, pos=self.get_wordnet_pos(pos)) for word, pos in comment])
 
-    def lemmatizing(self, data:pd.Series, delete_stopwords:bool = True):
-        """
-        Lemmatize tokens based on their part-of-speech tags.
-        
-        Args:
-            tokens: A list of word tokens.
-        Returns:
-            A list of lemmatized word tokens.
-        """
-        if delete_stopwords:
-            if isinstance(data, str):
-                data_lemmatized = data.apply(self.delete_stopwords)
-            else:
-                data_lemmatized = data.apply(self.delete_stopwords)
-        data_lemmatized = data
-        
-        return data_lemmatized.apply(self.lemmatized_tokens)
+        return comment_lemmatize.apply(lambda word: " ".join(word))
+
     
