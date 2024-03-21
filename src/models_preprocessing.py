@@ -3,8 +3,8 @@ import numpy as np
 from gensim.models import KeyedVectors
 
 # Tensorflow
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from transformers import AutoTokenizer
 
 class Models_preprocessing():

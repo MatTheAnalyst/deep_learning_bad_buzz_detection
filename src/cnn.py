@@ -25,11 +25,11 @@ EMBEDDING MATRIX ?
 
 
 import matplotlib.pyplot as plt
-from keras.layers import Embedding
-from keras.callbacks import ReduceLROnPlateau, EarlyStopping
-from keras.layers import Embedding, Dropout, Conv1D, GlobalMaxPool1D, Dense
-from keras.models import Sequential
-from keras.layers import Embedding, Dropout, Conv1D, Dense
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from tensorflow.keras.layers import Embedding, Dropout, Conv1D, GlobalMaxPool1D, Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, Dropout, Conv1D, Dense
 
 
 class Cnn():

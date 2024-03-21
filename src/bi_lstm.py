@@ -25,10 +25,8 @@ EMBEDDING MATRIX ?
 
 
 import matplotlib.pyplot as plt
-from keras.layers import Embedding
-from keras.layers import Embedding, Dense, LSTM, Bidirectional
-from keras.models import Sequential
-from keras.layers import Embedding, Dense
+from tensorflow.keras.layers import Embedding, Dense, LSTM, Bidirectional
+from tensorflow.keras.models import Sequential
 
 
 class Bi_lstm():
@@ -47,8 +45,8 @@ class Bi_lstm():
                                      ,trainable=False))
         else:
             self.model.add(Embedding(input_dim=self.config['tokenizer_max_words'] + 1
-                                     ,output_dim=self.config['embedding_dim']
-                                     ,input_length=self.config['max_length']))
+                                     ,output_dim=self.config['embedding_dim']))
+                                     #,input_length=self.config['max_length']))
             
         self.model.add(Bidirectional(LSTM(64, return_sequences=True)))
         self.model.add(Bidirectional(LSTM(64)))

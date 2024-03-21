@@ -31,7 +31,6 @@ setup:
   y_val_preprocessed_path: data/processed/y_val_preprocessed.pkl
   y_test_preprocessed_path: data/processed/y_test_preprocessed.pkl
 
-
 preprocessing:
   tokenizer_max_words: 2000
   max_length: 100
@@ -41,7 +40,7 @@ preprocessing:
   #data/glove/glove.twitter.27B.50d.txt
 
 cnn:
-  epochs: 5
+  epochs: 1
   batch_size: 32
   workers: 3
   figure_path: outputs/history_loss_accuracy.png
