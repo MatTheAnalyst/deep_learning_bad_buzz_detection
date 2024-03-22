@@ -1,0 +1,36 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+        
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << EOF
+          # Naviguer vers le dossier de l'application
+          cd /home/ubuntu/deep_learning_bad_buzz_detection/src
+          # Arrêter Uvicorn
+          pkill -f "uvicorn my_fastapi_app:app"
+          # Mettre à jour le code source
+          git pull
+          # Installer les dépendances
+          pip3 install -r requirements.txt
+          # Relancer Uvicorn
+          nohup uvicorn my_fastapi_app:app --host 0.0.0.0 --port 8000 > /home/ubuntu/deep_learning_bad_buzz_detection/src/uvicorn.log 2>&1 &
+        EOF
+
