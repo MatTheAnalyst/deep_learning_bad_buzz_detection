@@ -21,4 +21,4 @@ def test_should_lemmatize_comment():
     sut = Text_preprocessing()
     initial_comment = "I couldn't bear to watch it. And I thought the UA loss was embarrassing"
     expected_comment = "I could n't bear watch . And I think UA loss embarrass"
-    assert sut.lemmatized_comment(initial_comment) == expected_comment
+    assert sut.lemmatized_comment(initial_comment)[0] == expected_comment
