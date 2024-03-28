@@ -8,18 +8,6 @@ import re, string
 
 class Text_preprocessing():
     def __init__(self):
-        self.stopwords_english = {'a', 'about', 'above', 'after', 'again', 'against', 'ain', 'all', 'am', 'an', 'and',
-        'any', 'are', 'aren', "aren't", 'as', 'at', 'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both',
-        'but', 'by', 'can', 'couldn', "couldn't", 'd', 'did', 'didn', "didn't", 'do', 'does', 'doesn', "doesn't", 'doing',
-        'don', "don't", 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'hadn', "hadn't", 'has', 'hasn',
-        "hasn't", 'have', 'haven', "haven't", 'having', 'he', 'her', 'here', 'hers', 'herself', 'him', 'himself', 'his',
-        'how', 'i', 'if', 'in', 'into', 'is', 'isn', "isn't", 'it', "it's", 'its', 'itself', 'just', 'll', 'm', 'ma', 'me',
-        'mightn', "mightn't", 'more', 'most', 'mustn', "mustn't", 'my', 'myself', 'needn', "needn't", 'no', 'nor', 'not', 'now',
-        'o', 'of', 'off', 'on', 'once', 'only', 'or', 'other', 'our', 'ours', 'ourselves', 'out', 'over', 'own', 're', 's', 'same',
-        'shan', "shan't", 'she', "she's", 'should', "should've", 'shouldn', "shouldn't", 'so', 'some', 'such', 't', 'than', 'that', "that'll",
-        'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there', 'these', 'they', 'this', 'those', 'through', 'to', 'too', 'under', 'until',
-        'up', 've', 'very', 'was', 'wasn', "wasn't", 'we', 'were', 'weren', "weren't", 'what', 'when','where', 'which', 'while', 'who', 'whom', 'why', 'will',
-        'with', 'won', "won't", 'wouldn', "wouldn't", 'y', 'you', "you'd", "you'll", "you're", "you've", 'your', 'yours', 'yourself', 'yourselves'}
         pass
 
     def sampling(self, sample_size:int, values:pd.Series, labels:pd.Series, stratify:bool=True):
@@ -84,6 +72,7 @@ class Text_preprocessing():
             return wordnet.NOUN
     
     def lemmatized_comment(self, comment):
+        stop_words = set(stopwords.words('english'))
         lemmatizer = WordNetLemmatizer()
 
         # Check format of comment
@@ -95,7 +84,7 @@ class Text_preprocessing():
             print(f"Impossible d'appliquer une lemmatization.\nLe format du comment n'est pas reconnu : {type(comment)}")
         
         comment_tokenize = comment.apply(word_tokenize)
-        comment_without_stopword = comment_tokenize.apply(lambda x: [x for x in x if x not in self.stopwords_english])
+        comment_without_stopword = comment_tokenize.apply(lambda x: [x for x in x if x not in stop_words])
         comment_with_pos = comment_without_stopword.apply(pos_tag)
         comment_lemmatize = comment_with_pos.apply(lambda comment: [lemmatizer.lemmatize(word, pos=self.get_wordnet_pos(pos)) for word, pos in comment])
 
