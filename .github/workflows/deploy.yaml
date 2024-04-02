@@ -41,6 +41,8 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
     - name: Deploy to EC2
+      env:
+        AWS_DEFAULT_REGION: eu-west-3a
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << EOF
           # Naviguer vers le dossier de l'application
