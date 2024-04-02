@@ -34,13 +34,24 @@ setup:
 preprocessing:
   tokenizer_max_words: 2000
   max_length: 100
-  embedding_dim: 50
+  embedding_dim: 300
   pretrained_embedding_matrix_path: null
-  #data/GoogleNews-vectors-negative300.bin
-  #data/glove/glove.twitter.27B.50d.txt
+  #utils/GoogleNews-vectors-negative300.bin
+  #utils/glove/glove.twitter.27B.50d.txt
+
+logistic_regression:
+  max_words: 5000
+  param_grid:
+    penalty:
+      - l1
+      - l2
+    solver:
+      - lbfgs
+      - saga
+  cross_validation: 5
 
 cnn:
-  epochs: 1
+  epochs: 20
   batch_size: 32
   workers: 3
   figure_path: outputs/history_loss_accuracy.png

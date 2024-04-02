@@ -4,3 +4,11 @@ env/
 src/data/
 src/mlruns/
 *.pem
+*.key
+*.png
+src/outputs/logistic_regression_no_cleaning_tfidf_vectorizer.pkl
+src/outputs/cnn_no_cleaning_model/
+src/outputs/cnn_no_cleaning_tokenizer.json
+src/outputs/bi_lstm_data_cleaned_model/
+src/outputs/bi_lstm_data_cleaned_tokenizer.json
+src/utils/

@@ -36,14 +36,12 @@ def mlflow_run(
             print("Building CNN\n")
             cnn_model.build(embedding_matrix)
             history = cnn_model.fit(x_train_cnn_ready, y_train_cnn, x_val_cnn_ready, y_val_cnn)
-            cnn_model.plot_history(history)
+            mlflow.log_figure(cnn_model.plot_history(history), f'{run_name}_history_loss_accuracy.png')
         else:
             print("Building CNN without pretrained embedding matrix\n")
             cnn_model.build()
             history = cnn_model.fit(x_train_cnn_ready, y_train_cnn, x_val_cnn_ready, y_val_cnn)
-            cnn_model.plot_history(history)
-
-        mlflow.log_artifact(config['figure_path'])
+            mlflow.log_figure(cnn_model.plot_history(history), f'{run_name}_history_loss_accuracy.png')
 
         print("Predictions\n")
         y_pred = cnn_model.predict(x_test_cnn_ready)
@@ -58,13 +56,13 @@ def mlflow_run(
 with open("config.yaml", 'r') as f:
     config = yaml.safe_load(f)
 
-with open(config['setup']['x_train_sampled_path'], 'rb') as f:
+with open(config['setup']['x_train_lemmatized_path'], 'rb') as f:
     x_train = pickle.load(f)
 
-with open(config['setup']['x_val_sampled_path'], 'rb') as f:
+with open(config['setup']['x_val_lemmatized_path'], 'rb') as f:
     x_val = pickle.load(f)
 
-with open(config['setup']['x_test_sampled_path'], 'rb') as f:
+with open(config['setup']['x_test_lemmatized_path'], 'rb') as f:
     x_test = pickle.load(f)
 
 with open(config['setup']['y_train_preprocessed_path'], 'rb') as f:
@@ -76,7 +74,7 @@ with open(config['setup']['y_val_preprocessed_path'], 'rb') as f:
 with open(config['setup']['y_test_preprocessed_path'], 'rb') as f:
     y_test = pickle.load(f)
 
-RUN_NAME = 'cnn_no_cleaning'
+RUN_NAME = 'cnn_lemmatization_word2vec_embedding'
 
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("Détectez les Bad Buzz grace au Deep Learning")

@@ -17,7 +17,6 @@ CLEANING ?
 TOKENIZING ?
 EMBEDDING MATRIX ?
 
-
 - Chargement des données
 - Preprocessing
 
@@ -25,8 +24,10 @@ EMBEDDING MATRIX ?
 
 
 import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Embedding, Dense, LSTM, Bidirectional
+from tensorflow.keras.layers import Embedding, Dense, LSTM, Bidirectional, Dropout
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+
 
 
 class Bi_lstm():
@@ -48,8 +49,13 @@ class Bi_lstm():
                                      ,output_dim=self.config['embedding_dim']))
                                      #,input_length=self.config['max_length']))
             
+        
+        self.model.add(Dropout(rate=0.6))
         self.model.add(Bidirectional(LSTM(64, return_sequences=True)))
+        self.model.add(Dropout(rate=0.6))
         self.model.add(Bidirectional(LSTM(64)))
+        self.model.add(Dense(units=128, activation="relu"))
+        self.model.add(Dropout(rate=0.6))
         self.model.add(Dense(units=1, activation="sigmoid"))
         self.model.compile(loss="binary_crossentropy", optimizer='adam', metrics=["accuracy"])
 
@@ -57,8 +63,25 @@ class Bi_lstm():
     
     def fit(self, x_train, y_train, x_val, y_val):
         if self.model is not None:
+            early_stopping = EarlyStopping(patience=6,
+                                min_delta=0.01,
+                                monitor='val_loss',
+                                mode='min',
+                                verbose=1)
+        
+            lr_reducer = ReduceLROnPlateau(factor=0.1,
+                                           cooldown=5,
+                                           patience=5,
+                                           min_lr=0.1e-5,
+                                           monitor='val_loss',
+                                           mode='min',
+                                           verbose=1)
+
+            callbacks = [early_stopping, lr_reducer]
+
             history = self.model.fit(x_train, y_train,
                                      epochs=self.config['epochs'],
+                                     callbacks=callbacks,
                                      validation_data=(x_val, y_val),
                                      batch_size=self.config['batch_size'])
             return history
@@ -70,22 +93,32 @@ class Bi_lstm():
         val_acc = history.history['val_accuracy']
         loss = history.history['loss']
         val_loss = history.history['val_loss']
-        x = range(1, len(acc) + 1)
+        epochs = range(1, len(acc) + 1)
 
-        plt.figure(figsize=(12, 5))
-        plt.subplot(1, 2, 1)
-        plt.plot(x, acc, 'b', label='Training acc')
-        plt.plot(x, val_acc, 'r', label='Validation acc')
-        plt.title('Training and validation accuracy')
-        plt.legend()
+        # Création de la figure et des axes pour le graphique
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))
 
-        plt.subplot(1, 2, 2)
-        plt.plot(x, loss, 'b', label='Training loss')
-        plt.plot(x, val_loss, 'r', label='Validation loss')
-        plt.title('Training and validation loss')
-        plt.legend()
+        # Tracé de l'accuracy en fonction des epochs
+        ax[0].plot(epochs, acc, 'b', label='Training acc')
+        ax[0].plot(epochs, val_acc, 'r', label='Validation acc')
+        ax[0].set_title('Training and validation accuracy')
+        ax[0].set_xlabel('Epochs')
+        ax[0].set_ylabel('Accuracy')
+        ax[0].legend()
 
-        plt.savefig(self.config['figure_path'])        
+        # Tracé de la loss en fonction des epochs
+        ax[1].plot(epochs, loss, 'b', label='Training loss')
+        ax[1].plot(epochs, val_loss, 'r', label='Validation loss')
+        ax[1].set_title('Training and validation loss')
+        ax[1].set_xlabel('Epochs')
+        ax[1].set_ylabel('Loss')
+        ax[1].legend()
+
+        # Configuration des ticks de l'axe des abscisses pour qu'ils correspondent aux numéros des epochs
+        ax[0].set_xticks(epochs)
+        ax[1].set_xticks(epochs)
+
+        return fig       
 
     def predict(self, x_test):
         if self.model is not None:

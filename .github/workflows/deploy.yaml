@@ -54,4 +54,3 @@ jobs:
           # Relancer Uvicorn
           nohup uvicorn my_fastapi_app:app --host 0.0.0.0 --port 8000 > /home/ubuntu/deep_learning_bad_buzz_detection/src/uvicorn.log 2>&1 &
         EOF
-

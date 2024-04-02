@@ -5,8 +5,8 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json
 
-MODEL_PATH = "outputs/bi_lstm_data_cleaned_model"
-TOKENIZER_PATH = "outputs/bi_lstm_data_cleaned_tokenizer.json"
+MODEL_PATH = "outputs/bi_lstm_no_cleaning_model"
+TOKENIZER_PATH = "outputs/bi_lstm_no_cleaning_tokenizer.json"
 PADDING = 100
 
 app = FastAPI()
